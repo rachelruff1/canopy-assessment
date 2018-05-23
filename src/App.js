@@ -18,6 +18,19 @@ class App extends Component {
       diamonds: [],
       allQueens: false
     }
+  this.toggleButton = this.toggleButton.bind(this);
+  this.drawCards = this.drawCards.bind(this);
+  }
+
+  componentDidMount(){
+    axios
+    .get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+    .then(resp => {
+      this.drawCards(resp.data.deck_id)
+      this.setState({
+        deckId: resp.data.deck_id
+      });
+    })
   }
 
   toggleButton() {
@@ -26,62 +39,87 @@ class App extends Component {
     }
     )
   }
+
+
   drawCards() {
-    const { allQueens, spades, clubs, hearts, diamonds } = this.state;
+    const { allQueens, deckId, spades, clubs, hearts, diamonds } = this.state;
+    let spadesArr = [...spades];
+    let clubsArr = [...clubs];
+    let heartsArr = [...hearts];
+    let diamondsArr = [...diamonds];
+    // console.log(deckId)
     axios
-      .get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+      .get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
       .then(resp => {
-        // while (allQueens === false) {
-        axios
-          .get(`https://deckofcardsapi.com/api/deck/${resp.data.deck_id}/draw/?count=2`)
-          .then(resp => {
-            console.log(resp.data)
+        console.log(resp.data)
 
-            const card1Suit = resp.data.cards[0].suit;
-            const card2Suit = resp.data.cards[1].suit;
-            const card1Val = resp.data.cards[0].value;
-            const card2Val = resp.data.cards[1].value;
-            let spadesArr = [...spades];
-            let clubsArr = [...clubs];
-            let heartsArr = [...hearts];
-            let diamondsArr = [...diamonds];
-            console.log(spadesArr, clubsArr, heartsArr, diamondsArr);
-            if (card1Suit === 'SPADES') {
-              spadesArr.push(card1Val)
-            }
-            else if (card1Suit === 'CLUBS') {
-              clubsArr.push(card1Val)
-            }
-            else if (card1Suit === 'HEARTS') {
-              heartsArr.push(card1Val)            }
-            else {
-              diamonds.push(card1Val)
-            };
-            if (card2Suit === 'SPADES') {
-              spadesArr.push(card2Val)
-            }
-            else if (card2Suit === 'CLUBS') {
-              clubsArr.push(card2Val)
-            }
-            else if (card2Suit === 'HEARTS') {
-              heartsArr.push(card2Val)            }
-            else {
-              diamonds.push(card2Val)
-            };
-            // console.log(diamondsArr, heartsArr, spadesArr);
+        const card1Suit = resp.data.cards[0].suit;
+        const card2Suit = resp.data.cards[1].suit;
+        const card1Val = resp.data.cards[0].value;
+        const card2Val = resp.data.cards[1].value;
+     
+        console.log(spadesArr, clubsArr, heartsArr, diamondsArr);
+        if (card1Suit === 'SPADES') {
+          spadesArr = [...spadesArr, card1Val]
+        }
+        else if (card1Suit === 'DIAMONDS') {
+          diamondsArr = [...diamondsArr, card1Val]
+        }
+        else if (card1Suit === 'CLUBS') {
+          clubsArr = [...clubsArr, card1Val]
+        }
+        else if (card1Suit === 'HEARTS') {
+          heartsArr = [...heartsArr, card1Val]
+        }
+        else null;
+        if (card2Suit === 'SPADES') {
+          spadesArr = [...spadesArr, card2Val]
+        }
+        else if (card2Suit === 'DIAMONDS') {
+          diamondsArr.push(card2Val)
+        }
+        else if (card2Suit === 'CLUBS') {
+          clubsArr.push(card2Val)
+        }
+        else if (card2Suit === 'HEARTS') {
+          heartsArr.push(card2Val)
+        }
+        else null;
 
-            this.setState({
-              card1Img: resp.data.cards[0].image,
-              card2Img: resp.data.cards[1].image,
-              spades: spadesArr,
-              clubs: clubsArr,
-              hearts: heartsArr,
-              diamonds: diamondsArr
-            })
-          })
-        // }
-      });
-  }
+        this.setState({
+          card1Img: resp.data.cards[0].image,
+          card2Img: resp.data.cards[1].image,
+          spades: spadesArr,
+          clubs: clubsArr,
+          hearts: heartsArr,
+          diamonds: diamondsArr,
+          allQueens: queenCount
+        })
+    
+        let sQueen = false;
+        spadesArr.map(x => x === 'QUEEN' ? sQueen = true : null);
+        let cQueen = false;
+        clubsArr.map(x => x === 'QUEEN' ? cQueen = true : null);
+        let hQueen = false;
+        heartsArr.map(x => x === 'QUEEN' ? hQueen = true : null);
+        let dQueen = false;
+        diamondsArr.map(x => x === 'QUEEN' ? dQueen = true : null);
+        
+        console.log(sQueen, cQueen, hQueen, dQueen);
+
+        let queenCount = (sQueen === true && cQueen === true && hQueen === true && dQueen === true) ? true : false;
+
+        console.log(queenCount);
+        (queenCount === false) ? this.drawCards() : Swal('DONE!');
+
+      })
+      
+    
+
+  };
+
+
+
 
   render() {
     console.log(this.state);
@@ -103,6 +141,7 @@ class App extends Component {
             <h3>Diamonds:</h3><p>{({ diamonds }) ? diamonds.sort() : null}</p>
           </ul>
         }
+        {/* <button onClick={() => Swal('hi')}>Swal</button> */}
       </div>
     );
   }
