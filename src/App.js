@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -15,39 +14,42 @@ class App extends Component {
       spades: [],
       clubs: [],
       hearts: [],
-      diamonds: [],
-      allQueens: false
+      diamonds: []
     }
-  this.toggleButton = this.toggleButton.bind(this);
-  this.drawCards = this.drawCards.bind(this);
+    this.newDeck = this.newDeck.bind(this);
+    this.toggleButton = this.toggleButton.bind(this);
+    this.drawCards = this.drawCards.bind(this);
+    this.shuffle = this.shuffle.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
+    this.newDeck()
+  }
+
+  newDeck() {
     axios
-    .get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-    .then(resp => {
-      this.drawCards(resp.data.deck_id)
-      this.setState({
-        deckId: resp.data.deck_id
-      });
-    })
+      .get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+      .then(resp => {
+        this.setState({
+          deckId: resp.data.deck_id
+        });
+      })
   }
-
   toggleButton() {
     this.setState({
-      button: 'false'
+      button: (!this.state.button)
     }
     )
   }
 
 
   drawCards() {
-    const { allQueens, deckId, spades, clubs, hearts, diamonds } = this.state;
+    const { deckId, spades, clubs, hearts, diamonds } = this.state;
     let spadesArr = [...spades];
     let clubsArr = [...clubs];
     let heartsArr = [...hearts];
     let diamondsArr = [...diamonds];
-    // console.log(deckId)
+
     axios
       .get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
       .then(resp => {
@@ -57,7 +59,7 @@ class App extends Component {
         const card2Suit = resp.data.cards[1].suit;
         const card1Val = resp.data.cards[0].value;
         const card2Val = resp.data.cards[1].value;
-     
+
         console.log(spadesArr, clubsArr, heartsArr, diamondsArr);
         if (card1Suit === 'SPADES') {
           spadesArr = [...spadesArr, card1Val]
@@ -92,10 +94,9 @@ class App extends Component {
           spades: spadesArr,
           clubs: clubsArr,
           hearts: heartsArr,
-          diamonds: diamondsArr,
-          allQueens: queenCount
+          diamonds: diamondsArr
         })
-    
+
         let sQueen = false;
         spadesArr.map(x => x === 'QUEEN' ? sQueen = true : null);
         let cQueen = false;
@@ -104,44 +105,94 @@ class App extends Component {
         heartsArr.map(x => x === 'QUEEN' ? hQueen = true : null);
         let dQueen = false;
         diamondsArr.map(x => x === 'QUEEN' ? dQueen = true : null);
-        
+
         console.log(sQueen, cQueen, hQueen, dQueen);
 
         let queenCount = (sQueen === true && cQueen === true && hQueen === true && dQueen === true) ? true : false;
-
         console.log(queenCount);
-        (queenCount === false) ? this.drawCards() : Swal('DONE!');
-
+        (queenCount === false) ? setTimeout(() => {this.drawCards()}, 1000) : Swal('Queens found!');
       })
-      
-    
-
   };
 
-
+  shuffle() {
+    this.newDeck();
+    this.toggleButton();
+    this.setState({
+      card1Img: '',
+      card2Img: '',
+      spades: [],
+      clubs: [],
+      hearts: [],
+      diamonds: []
+    })
+  }
 
 
   render() {
     console.log(this.state);
     const { card1Img, card2Img, button, spades, clubs, hearts, diamonds } = this.state;
+
+    let spadesFinal = () => {
+      let sSort = spades.sort();
+      function sorter(a, b) {
+        return a - b;
+      }
+      sSort.sort(sorter);
+      let sCombo = sSort.filter(x => x !== 'ACE' && x !== 'KING');
+      spades.map(x => { x === 'ACE' ? sCombo.unshift(x) : null; x === 'KING' ? sCombo.push(x) : null })
+      return sCombo;
+    }
+
+    let clubsFinal = () => {
+      let cSort = clubs.sort();
+      function sorter(a, b) {
+        return a - b;
+      }
+      cSort.sort(sorter);
+      let cCombo = cSort.filter(x => x !== 'ACE' && x !== 'KING');
+      clubs.map(x => { x === 'ACE' ? cCombo.unshift(x) : null; x === 'KING' ? cCombo.push(x) : null })
+      return cCombo;
+    }
+
+    let heartsFinal = () => {
+      let hSort = hearts.sort();
+      function sorter(a, b) {
+        return a - b;
+      }
+      hSort.sort(sorter);
+      let hCombo = hSort.filter(x => x !== 'ACE' && x !== 'KING');
+      hearts.map(x => { x === 'ACE' ? hCombo.unshift(x) : null; x === 'KING' ? hCombo.push(x) : null })
+      return hCombo;
+    }
+
+    let diamondsFinal = () => {
+      let dSort = diamonds.sort();
+      function sorter(a, b) {
+        return a - b;
+      }
+      dSort.sort(sorter);
+      let dCombo = dSort.filter(x => x !== 'ACE' && x !== 'KING');
+      diamonds.map(x => { x === 'ACE' ? dCombo.unshift(x) : null; x === 'KING' ? dCombo.push(x) : null })
+      return dCombo;
+    }
+
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+        <header className="App-header2">
           <h1 className="App-title">Find the Queens</h1>
         </header>
         {card1Img ? <img src={card1Img} alt='no img' /> : null}
         {card2Img ? <img src={card2Img} alt='no img' /> : null}
         < br />
-        {button === true ? <button onClick={() => { this.drawCards(); this.toggleButton() }}>Click button to start</button> :
+        {button === true ? <button onClick={() => { this.drawCards(); this.toggleButton(); }}>Click button to start</button> :
           <ul>
-            <h3>Spades:</h3><p>{({ spades }) ? spades.sort() : null}</p>
-            <h3>Clubs:</h3><p>{({ clubs }) ? clubs.sort() : null}</p>
-            <h3>Hearts:</h3><p>{({ hearts }) ? hearts.sort() : null}</p>
-            <h3>Diamonds:</h3><p>{({ diamonds }) ? diamonds.sort() : null}</p>
+            <h3>Spades:</h3><p>{`[${spadesFinal()}]`}</p>
+            <h3>Clubs:</h3><p>{`[${clubsFinal()}]`}</p>
+            <h3>Hearts:</h3><p>{`[${heartsFinal()}]`}</p>
+            <h3>Diamonds:</h3><p>{`[${diamondsFinal()}]`}</p>
           </ul>
         }
-        {/* <button onClick={() => Swal('hi')}>Swal</button> */}
+        {(button) ? null : <button onClick={() => this.shuffle()}>Shuffle Deck</button>}
       </div>
     );
   }
