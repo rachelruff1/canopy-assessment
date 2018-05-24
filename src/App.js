@@ -110,7 +110,7 @@ class App extends Component {
 
         let queenCount = (sQueen === true && cQueen === true && hQueen === true && dQueen === true) ? true : false;
         console.log(queenCount);
-        (queenCount === false) ? setTimeout(() => {this.drawCards()}, 1000) : Swal('Queens found!');
+        (queenCount === false) ? setTimeout(() => { this.drawCards() }, 1000) : Swal('Queens found!');
       })
   };
 
@@ -178,21 +178,24 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header className="App-header2">
-          <h1 className="App-title">Find the Queens</h1>
-        </header>
-        {card1Img ? <img src={card1Img} alt='no img' /> : null}
-        {card2Img ? <img src={card2Img} alt='no img' /> : null}
-        < br />
-        {button === true ? <button onClick={() => { this.drawCards(); this.toggleButton(); }}>Click button to start</button> :
-          <ul>
+      <div className='content-container'>
+        <h1 className="App-title">♣ ♦ FIND THE QUEENS ♥ ♠</h1>
+        <div className='card-container'>
+          {card1Img ? <img src={card1Img} alt='no img' /> : null}
+          {card2Img ? <img src={card2Img} alt='no img' /> : null}
+        </div>
+
+        {button === true ? <div className='buttons'><button onClick={() => { this.drawCards(); this.toggleButton(); }}>Click button to start</button></div> :
+          <ul className='suits-container'>
             <h3>Spades:</h3><p>{`[${spadesFinal()}]`}</p>
             <h3>Clubs:</h3><p>{`[${clubsFinal()}]`}</p>
             <h3>Hearts:</h3><p>{`[${heartsFinal()}]`}</p>
             <h3>Diamonds:</h3><p>{`[${diamondsFinal()}]`}</p>
           </ul>
         }
-        {(button) ? null : <button onClick={() => this.shuffle()}>Shuffle Deck</button>}
+        <div className='buttons'>
+          {(button) ? null : <button onClick={() => this.shuffle()}>Shuffle Deck</button>}</div>
+      </div>
       </div>
     );
   }

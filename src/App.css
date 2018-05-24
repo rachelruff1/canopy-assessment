@@ -1,28 +1,90 @@
 .App {
-  text-align: center;
+  height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  width: 100vw;
+  display: flex;
+    background-color: rgb(235, 232, 233);
+    
+    padding-bottom: 5%;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.content-container{
+width: 70%;
+flex-direction: column;
+align-content: center;
+justify-content: center;
+padding-left: 15%;
+padding-right: 15%;
+
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.header {
+  flex-direction: row;
 }
 
 .App-title {
-  font-size: 1.5em;
+  /* width:100vw; */
+  /* display: inline; */
+  text-align: center;
+  font-size: auto;
+  font-weight: bolder;
+  color: rgb(56, 56, 56)
 }
 
-.App-intro {
-  font-size: large;
+.card-container{
+  text-align: center;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.App button {
+  
+  /* text-align: center; */
+  width: auto;
+  font-size: 15px;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: rgb(233, 237, 248);
+  color: black;
+  border: 2px solid rgb(54, 70, 124); /* Green */
 }
+
+.App button:hover{
+  background-color: rgb(54, 70, 124);
+  color: white;
+}
+
+.suits-container {
+
+  /* float: left; */
+}
+
+.suits-container h3 {
+  font-weight: bolder;
+  font-size: 80%;
+  /* margin-left: 20%; */
+}
+
+.suits-container p {
+  padding-left: 5px;
+  font-size: 80%;
+}
+
+.buttons {
+  text-align: center;
+}
+
+.card-container img {
+  padding: 0 10px 0 10px;
+  width: 15%;
+    height: auto;
+
+}
+
+@media only screen and (max-width:735px) {
+  .App-title {
+
+padding: 10% 0 50px 0;
+    text-align: center;
+    font-size: 18px;
+
+
+}}
